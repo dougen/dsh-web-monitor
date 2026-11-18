@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>DshWebMonitor.SmokeTests</RootNamespace>
+    <AssemblyName>DshWebMonitor.SmokeTests</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DshWebMonitor\DshWebMonitor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="fixtures\**\*.js" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

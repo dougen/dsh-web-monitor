@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsh Web Monitor · Ant Design 界面原型</title>
+<style>
+  :root {
+    --blue: #1677ff;
+    --blue-hover: #4096ff;
+    --blue-soft: #e6f4ff;
+    --green: #52c41a;
+    --green-soft: #f6ffed;
+    --red: #ff4d4f;
+    --red-soft: #fff2f0;
+    --orange: #faad14;
+    --ink: #1f1f1f;
+    --ink-2: #595959;
+    --ink-3: #8c8c8c;
+    --ink-4: #bfbfbf;
+    --border: #f0f0f0;
+    --border-2: #d9d9d9;
+    --bg: #f5f5f5;
+    --page: #f0f2f5;
+    --radius: 8px;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .03), 0 2px 8px rgba(0, 0, 0, .04);
+    --mono: "Cascadia Mono", "JetBrains Mono", Consolas, "Courier New", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei UI",
+            "PingFang SC", "Hiragino Sans GB", sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  [hidden] { display: none !important; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5715;
+    color: var(--ink);
+    background: var(--page);
+    display: grid;
+    place-items: center;
+    padding: 32px 24px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button, input, select { font: inherit; color: inherit; }
+
+  button { cursor: pointer; }
+
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  /* ---------------------------------------------------------------- 应用窗口 */
+
+  .app {
+    width: 820px;
+    max-width: 100%;
+    height: 540px;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .10), 0 0 0 1px rgba(0, 0, 0, .04);
+    overflow: hidden;
+  }
+
+  .titlebar {
+    flex: 0 0 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 6px 0 14px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+
+  .app-mark {
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 6px;
+    background: var(--blue);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .app-title { font-weight: 600; font-size: 13px; }
+
+  .window-actions { margin-left: auto; display: flex; }
+
+  .win-btn {
+    width: 40px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: transparent;
+    color: var(--ink-2);
+    border-radius: 4px;
+  }
+
+  .win-btn:hover { background: #f5f5f5; }
+
+  .win-btn.close:hover { background: var(--red-soft); color: var(--red); }
+
+  .win-btn svg { width: 12px; height: 12px; }
+
+  /* ---------------------------------------------------------------- Tab */
+
+  .tabs {
+    flex: 0 0 42px;
+    display: flex;
+    align-items: stretch;
+    gap: 4px;
+    padding: 0 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    position: relative;
+    border: 0;
+    background: transparent;
+    padding: 0 4px;
+    margin-right: 20px;
+    color: var(--ink-2);
+    font-size: 14px;
+    transition: color .2s;
+  }
+
+  .tab:hover { color: var(--blue); }
+
+  .tab[aria-selected="true"] { color: var(--ink); font-weight: 500; }
+
+  .tab[aria-selected="true"]::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: var(--blue);
+  }
+
+  /* ---------------------------------------------------------------- 内容区 */
+
+  .content {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 20px;
+  }
+
+  .panel {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .panel.active { display: flex; }
+
+  /* ---------------------------------------------------------------- 通用组件 */
+
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 15px;
+    border: 1px solid var(--border-2);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ink);
+    font-size: 14px;
+    white-space: nowrap;
+    transition: border-color .2s, color .2s, background .2s;
+  }
+
+  .btn:hover { border-color: var(--blue); color: var(--blue); }
+
+  .btn-primary {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+  }
+
+  .btn-primary:hover { background: var(--blue-hover); border-color: var(--blue-hover); color: #fff; }
+
+  .btn-danger { color: var(--red); }
+
+  .btn-danger:hover { border-color: var(--red); color: var(--red); }
+
+  .btn-sm { height: 28px; padding: 0 12px; font-size: 13px; }
+
+  .btn:disabled,
+  .btn[disabled] {
+    background: #f5f5f5;
+    border-color: var(--border-2);
+    color: var(--ink-4);
+    cursor: not-allowed;
+  }
+
+  .btn-primary:disabled,
+  .btn-primary[disabled] {
+    background: #f5f5f5;
+    border-color: var(--border-2);
+    color: var(--ink-4);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 20px;
+    white-space: nowrap;
+  }
+
+  .tag-green { color: #389e0d; background: var(--green-soft); border-color: #b7eb8f; }
+  .tag-red { color: #cf1322; background: var(--red-soft); border-color: #ffccc7; }
+  .tag-blue { color: #0958d9; background: var(--blue-soft); border-color: #91caff; }
+  .tag-grey { color: var(--ink-2); background: #fafafa; border-color: var(--border-2); }
+
+  .select {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    min-width: 118px;
+    border: 1px solid var(--border-2);
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  .select:hover { border-color: var(--blue-hover); }
+
+  .select select {
+    appearance: none;
+    width: 100%;
+    height: 100%;
+    padding: 0 30px 0 11px;
+    border: 0;
+    background: transparent;
+    font-size: 13px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .select select:focus-visible { outline: none; }
+
+  .select::after {
+    content: "";
+    position: absolute;
+    right: 11px;
+    width: 7px;
+    height: 7px;
+    border-right: 1.5px solid var(--ink-3);
+    border-bottom: 1.5px solid var(--ink-3);
+    transform: translateY(-2px) rotate(45deg);
+    pointer-events: none;
+  }
+
+  .select.sm { height: 28px; min-width: 108px; }
+  .select.sm select { font-size: 12px; }
+
+  .hint { color: var(--ink-3); font-size: 12px; }
+
+  /* ---------------------------------------------------------------- 主页 */
+
+  .status-card { padding: 18px 20px 16px; }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .live-dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    flex: 0 0 auto;
+  }
+
+  .live-dot::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1px solid var(--green);
+    opacity: 0;
+    animation: pulse 2.4s ease-out infinite;
+  }
+
+  .live-dot.stopped { background: var(--ink-4); }
+  .live-dot.stopped::after { display: none; }
+
+  @keyframes pulse {
+    0% { opacity: .55; transform: scale(.55); }
+    70% { opacity: 0; transform: scale(1.1); }
+    100% { opacity: 0; }
+  }
+
+  .status-copy { min-width: 0; }
+
+  .status-copy h1 {
+    margin: 0;
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 600;
+    letter-spacing: .2px;
+  }
+
+  .status-meta {
+    margin: 2px 0 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    color: var(--ink-3);
+    font-size: 12px;
+  }
+
+  .status-meta .mono { font-family: var(--mono); color: var(--ink-2); }
+
+  .status-side { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .home-spacer { flex: 1 1 auto; }
+
+  .summary-card { padding: 14px 20px 16px; }
+
+  .summary-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 10px;
+  }
+
+  .summary-title { font-size: 14px; font-weight: 600; }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  .summary-item { display: flex; align-items: baseline; gap: 8px; }
+
+  .summary-item + .summary-item {
+    border-left: 1px solid var(--border);
+    padding-left: 20px;
+  }
+
+  .summary-num {
+    font-size: 22px;
+    line-height: 28px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .summary-num.accent { color: #0958d9; }
+
+  .summary-lbl { font-size: 12px; color: var(--ink-3); }
+
+  .npm-card { padding: 16px 20px; flex: 0 0 auto; }
+
+  .npm-row { display: flex; align-items: center; gap: 14px; }
+
+  .pkg-mark {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    border-radius: 4px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .pkg-name { font-family: var(--mono); font-size: 13px; font-weight: 600; }
+
+  .pkg-meta { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+
+  .npm-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+  .npm-hint { margin: 12px 0 0; padding-top: 12px; border-top: 1px solid var(--border); }
+
+  /* ---------------------------------------------------------------- 主页两行布局 */
+
+  #panel-home.active {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+
+  #panel-home .status-card {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 20px 16px;
+  }
+
+  .status-top { display: flex; align-items: center; gap: 10px; }
+
+  .status-title { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; }
+
+  .status-top .tag { margin-left: auto; }
+
+  .status-address {
+    margin: 6px 0 0;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  .status-address .dot-sep { color: var(--ink-4); }
+
+  .summary-update { margin-top: 18px; }
+
+  .update-result {
+    margin: 8px 0 0;
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--ink-3);
+    min-height: 18px;
+  }
+
+  .update-result.ok { color: #389e0d; }
+  .update-result.err { color: #cf1322; }
+
+  #panel-home .card-actions {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .summary-card {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 18px;
+    min-height: 0;
+  }
+
+  .summary-stats {
+    margin-top: 18px;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: nowrap;
+  }
+
+  .summary-stat { display: flex; align-items: baseline; gap: 6px; }
+
+  .summary-stat + .summary-stat {
+    margin-left: 10px;
+    padding-left: 10px;
+    border-left: 1px solid var(--border);
+  }
+
+  .summary-stat .n {
+    font-size: 22px;
+    line-height: 28px;
+    font-weight: 700;
+    letter-spacing: -.2px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .summary-stat .n.accent { color: #0958d9; }
+  .summary-stat .lbl { color: var(--ink-3); font-size: 11px; }
+
+  #panel-home .npm-card {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    padding: 14px 20px 12px;
+    flex: 0 0 auto;
+  }
+
+  #panel-home .npm-row { align-items: center; }
+
+  #panel-home .npm-hint {
+    margin: 10px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  /* ---------------------------------------------------------------- 插件页 */
+
+  .toolbar-card { padding: 12px 14px; }
+
+  .toolbar { display: flex; align-items: center; gap: 10px; }
+
+  .input-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    width: 300px;
+    padding: 0 11px;
+    border: 1px solid var(--border-2);
+    border-radius: 6px;
+    background: #fff;
+  }
+
+  .input-wrap:focus-within { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(22, 119, 255, .08); }
+
+  .input-wrap svg { width: 13px; height: 13px; color: var(--ink-3); flex: 0 0 auto; }
+
+  .input-wrap input {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font-size: 13px;
+  }
+
+  .input-wrap input:focus { outline: none; }
+
+  .input-wrap input::placeholder { color: var(--ink-4); }
+
+  .toolbar-spacer { flex: 1 1 auto; }
+
+  .table-card { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+  .table-wrap { flex: 1 1 auto; min-height: 0; overflow: auto; }
+
+  table.table { width: 100%; border-collapse: collapse; }
+
+  .table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    height: 38px;
+    padding: 0 16px;
+    background: #fafafa;
+    border-bottom: 1px solid var(--border);
+    color: var(--ink-2);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .table thead th.center, .table td.center { text-align: center; }
+
+  .table tbody td {
+    height: 42px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    vertical-align: middle;
+  }
+
+  .table tbody tr { cursor: pointer; }
+
+  .table tbody tr:hover td { background: #fafafa; }
+
+  .table tbody tr[aria-selected="true"] td { background: var(--blue-soft); }
+
+  .table .name { font-family: var(--mono); font-size: 12.5px; }
+
+  .table .ver {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+
+  .table .ver.new { color: #0958d9; font-weight: 600; }
+
+  .table-footer {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-top: 1px solid var(--border);
+    background: #fff;
+  }
+
+  .table-footer .hint {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 430px;
+  }
+
+  .row-actions { margin-left: auto; display: flex; gap: 8px; }
+
+  .footnote { margin: 0; color: var(--ink-3); font-size: 12px; }
+
+  /* ---------------------------------------------------------------- 日志页 */
+
+  .log-card { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+  .log-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    padding: 12px 16px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 22px;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .log-line { display: flex; gap: 10px; }
+
+  .log-line .ts { flex: 0 0 auto; color: var(--ink-3); user-select: none; }
+
+  .log-line .msg { min-width: 0; white-space: pre-wrap; }
+
+  .log-line.cmd .msg { color: #0958d9; }
+  .log-line.sys .msg { color: #389e0d; }
+  .log-line.err .msg { color: #cf1322; }
+  .log-line.dim .msg { color: var(--ink-3); }
+
+  /* ---------------------------------------------------------------- 状态栏 */
+
+  .statusbar {
+    flex: 0 0 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    background: #fafafa;
+    border-top: 1px solid var(--border);
+    color: var(--ink-3);
+    font-size: 12px;
+  }
+
+  .statusbar .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+  }
+
+  .statusbar .dot.stopped { background: var(--ink-4); }
+
+  .statusbar .right { margin-left: auto; font-family: var(--mono); font-size: 11px; }
+
+  /* ---------------------------------------------------------------- 响应式 */
+
+  @media (max-width: 880px) {
+    body { padding: 0; display: block; }
+    .app { width: 100%; height: 100vh; border-radius: 0; }
+    .input-wrap { width: 200px; }
+    #panel-home.active { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
+    #panel-home .status-card, #panel-home .summary-card, #panel-home .npm-card {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .npm-row { flex-wrap: wrap; }
+    .npm-actions { margin-left: 0; }
+    .toolbar { flex-wrap: wrap; }
+    .table-footer { flex-wrap: wrap; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-dot::after { animation: none; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<main class="app" role="application" aria-label="dsh Web Monitor">
+
+  <!-- ============================================================ 标题栏 -->
+  <header class="titlebar">
+    <span class="app-mark" aria-hidden="true">dsh</span>
+    <span class="app-title">dsh Web Monitor</span>
+    <div class="window-actions">
+      <button class="win-btn" type="button" aria-label="最小化">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 6h8"/></svg>
+      </button>
+      <button class="win-btn close" type="button" aria-label="关闭">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.5 2.5l7 7M9.5 2.5l-7 7"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================================ Tab -->
+  <nav class="tabs" role="tablist" aria-label="主界面">
+    <button class="tab" type="button" role="tab" id="tab-home" aria-controls="panel-home" aria-selected="true">主页</button>
+    <button class="tab" type="button" role="tab" id="tab-plugins" aria-controls="panel-plugins" aria-selected="false">插件管理</button>
+    <button class="tab" type="button" role="tab" id="tab-logs" aria-controls="panel-logs" aria-selected="false">日志</button>
+  </nav>
+
+  <div class="content">
+
+    <!-- ========================================================== 主页 -->
+    <section class="panel active" id="panel-home" role="tabpanel" aria-labelledby="tab-home">
+
+      <div class="card status-card">
+        <div class="status-top">
+          <span class="live-dot" id="liveDot" aria-hidden="true"></span>
+          <h1 class="status-title" id="serverState">运行中</h1>
+          <span class="tag tag-green" id="ownershipTag">由本程序启动</span>
+        </div>
+        <p class="status-address">
+          <span class="mono" id="serverAddress">127.0.0.1:3080</span>
+          <span class="dot-sep" aria-hidden="true">·</span>
+          <span class="mono" id="serverPid">PID 5040</span>
+        </p>
+
+        <div class="card-actions">
+          <button class="btn" type="button" id="btnStart" disabled>启动</button>
+          <button class="btn btn-danger" type="button" id="btnStop">停止</button>
+          <button class="btn" type="button" id="btnRestart">重新启动</button>
+          <button class="btn btn-primary" type="button" id="btnOpen">打开 Web UI</button>
+        </div>
+      </div>
+
+      <div class="card summary-card">
+        <div class="summary-head">
+          <span class="summary-title">插件概况</span>
+          <span class="hint">profile：web</span>
+        </div>
+
+        <div class="summary-stats">
+          <div class="summary-stat"><span class="n">10</span><span class="lbl">已安装</span></div>
+          <div class="summary-stat"><span class="n">9</span><span class="lbl">已启用</span></div>
+          <div class="summary-stat"><span class="n accent" id="updatableCount">2</span><span class="lbl">可更新</span></div>
+        </div>
+
+        <div class="summary-update">
+          <button class="btn btn-sm" type="button" id="btnUpdateAll">一键更新</button>
+          <p class="update-result" id="updateAllResult" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="card npm-card">
+        <div class="npm-row">
+          <img class="pkg-mark" src="../src/DshWebMonitor/npm-logo.png" alt="npm">
+          <div>
+            <div class="pkg-name">@deepseek-ai/dsh</div>
+            <div class="pkg-meta">
+              <span class="tag tag-green">已安装</span>
+              <span class="tag tag-blue" id="installedTag">v0.2.2-rc.1</span>
+            </div>
+          </div>
+          <div class="npm-actions">
+            <label class="select" aria-label="dsh 更新通道">
+              <select id="dshChannel">
+                <option value="stable" selected>stable</option>
+                <option value="rc">rc</option>
+                <option value="beta">beta</option>
+                <option value="alpha">alpha</option>
+                <option value="next">next</option>
+                <option value="all">all</option>
+              </select>
+            </label>
+            <button class="btn" type="button" id="btnCheck">检查更新</button>
+            <button class="btn btn-primary" type="button" id="btnUpdate" hidden>更新到 v0.2.3</button>
+            <button class="btn btn-primary" type="button" id="btnInstall" hidden>下载安装</button>
+          </div>
+        </div>
+        <p class="npm-hint hint" id="npmHint">尚未检查更新</p>
+      </div>
+
+    </section>
+    <!-- ========================================================== 插件管理 -->
+    <section class="panel" id="panel-plugins" role="tabpanel" aria-labelledby="tab-plugins" hidden>
+
+      <div class="card toolbar-card">
+        <div class="toolbar">
+          <label class="input-wrap" aria-label="插件包名">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="7" cy="7" r="4.4"/><path d="M10.4 10.4L14 14"/>
+            </svg>
+            <input type="text" placeholder="输入插件包名，例如 dsh-notify-me">
+          </label>
+          <button class="btn btn-primary" type="button">安装</button>
+          <span class="toolbar-spacer"></span>
+          <label class="select sm" aria-label="插件更新通道">
+            <select id="pluginChannel">
+              <option selected>stable</option>
+              <option>rc</option>
+              <option>beta</option>
+              <option>alpha</option>
+              <option>next</option>
+              <option>all</option>
+            </select>
+          </label>
+          <button class="btn btn-sm" type="button">刷新列表</button>
+        </div>
+      </div>
+
+      <div class="card table-card">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">插件</th>
+                <th scope="col" class="center">当前版本</th>
+                <th scope="col" class="center">最新版本</th>
+                <th scope="col" class="center">状态</th>
+              </tr>
+            </thead>
+            <tbody id="pluginBody">
+              <tr aria-selected="false" data-name="@anysearch/anysearch-dsh" data-enabled="true">
+                <td class="name">@anysearch/anysearch-dsh</td>
+                <td class="center ver">0.1.8</td>
+                <td class="center ver"></td>
+                <td class="center"><span class="tag tag-green">已启用</span></td>
+              </tr>
+              <tr aria-selected="true" data-name="@example/dsh-cdp" data-enabled="true">
+                <td class="name">@example/dsh-cdp</td>
+                <td class="center ver">0.5.0</td>
+                <td class="center ver"></td>
+                <td class="center"><span class="tag tag-green">已启用</span></td>
+              </tr>
+              <tr aria-selected="false" data-name="@sal7one/dsh-design-studio" data-enabled="false">
+                <td class="name">@sal7one/dsh-design-studio</td>
+                <td class="center ver">2.7.6</td>
+                <td class="center ver"></td>
+                <td class="center"><span class="tag tag-grey">已停用</span></td>
+              </tr>
+              <tr aria-selected="false" data-name="@xbzbing/dsh-git-panel" data-enabled="true">
+                <td class="name">@xbzbing/dsh-git-panel</td>
+                <td class="center ver">1.13.1</td>
+                <td class="center ver new">1.13.2</td>
+                <td class="center"><span class="tag tag-green">已启用</span></td>
+              </tr>
+              <tr aria-selected="false" data-name="dsh-notify-me" data-enabled="true">
+                <td class="name">dsh-notify-me</td>
+                <td class="center ver">1.17.0</td>
+                <td class="center ver new">1.18.0</td>
+                <td class="center"><span class="tag tag-green">已启用</span></td>
+              </tr>
+              <tr aria-selected="false" data-name="dsh-project-mcp-manager" data-enabled="true">
+                <td class="name">dsh-project-mcp-manager</td>
+                <td class="center ver">0.12.0</td>
+                <td class="center ver"></td>
+                <td class="center"><span class="tag tag-green">已启用</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <span class="hint">profile：C:\Users\me\.dsh\profiles\web</span>
+          <div class="row-actions">
+            <button class="btn btn-sm" type="button" id="btnEnable" disabled>启用</button>
+            <button class="btn btn-sm" type="button" id="btnDisable">停用</button>
+            <button class="btn btn-sm" type="button" id="btnUpdatePlugin">更新</button>
+            <button class="btn btn-sm btn-danger" type="button" id="btnRemove">删除</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="footnote">启用 / 停用会修改 profile 的 package.json，重新启动 dsh web 后生效。</p>
+
+    </section>
+
+    <!-- ========================================================== 日志 -->
+    <section class="panel" id="panel-logs" role="tabpanel" aria-labelledby="tab-logs" hidden>
+
+      <div class="card log-card">
+        <div class="log-scroll" id="logScroll" aria-label="运行日志" tabindex="0">
+          <div class="log-line"><span class="ts">16:31:02</span><span class="msg cmd">$ npm view @deepseek-ai/dsh dist-tags --json</span></div>
+          <div class="log-line"><span class="ts">16:31:02</span><span class="msg">{ "latest": "0.2.2-rc.1", "next": "0.2.2-rc.1", "alpha": "0.2.2-alpha.3" }</span></div>
+          <div class="log-line"><span class="ts">16:31:02</span><span class="msg">命令退出码：0</span></div>
+          <div class="log-line"><span class="ts">16:31:03</span><span class="msg sys">stable 通道：目标 v0.2.2-rc.1 不高于当前 v0.2.2-rc.1，无可用更新</span></div>
+          <div class="log-line"><span class="ts">16:31:20</span><span class="msg cmd">$ dsh plugin --profile web list --json</span></div>
+          <div class="log-line"><span class="ts">16:31:21</span><span class="msg">命令退出码：0</span></div>
+          <div class="log-line"><span class="ts">16:31:21</span><span class="msg sys">已按通道 stable 解析 10 个插件的最新版本</span></div>
+          <div class="log-line"><span class="ts">16:31:40</span><span class="msg cmd">$ dsh plugin --profile web update @xbzbing/dsh-git-panel@1.13.2</span></div>
+          <div class="log-line"><span class="ts">16:31:52</span><span class="msg">Done in 11.8s</span></div>
+          <div class="log-line"><span class="ts">16:31:52</span><span class="msg sys">插件 @xbzbing/dsh-git-panel 更新完成（重新启动 dsh web 后生效）</span></div>
+          <div class="log-line"><span class="ts">16:32:05</span><span class="msg">dsh web stderr: listening on 127.0.0.1:3080</span></div>
+          <div class="log-line"><span class="ts">16:32:05</span><span class="msg sys">dsh web 已就绪</span></div>
+          <div class="log-line"><span class="ts">16:32:41</span><span class="msg cmd">$ npm add -g @deepseek-ai/dsh@0.2.3</span></div>
+          <div class="log-line"><span class="ts">16:32:44</span><span class="msg err">npm error code EACCES</span></div>
+          <div class="log-line"><span class="ts">16:32:44</span><span class="msg err">npm error syscall mkdir</span></div>
+          <div class="log-line"><span class="ts">16:32:44</span><span class="msg err">npm error 更新失败，版本保持 v0.2.2-rc.1</span></div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- ============================================================ 状态栏 -->
+  <footer class="statusbar">
+    <span class="dot" id="statusDot" aria-hidden="true"></span>
+    <span id="statusText">就绪</span>
+    <span class="right">v1.0.0</span>
+  </footer>
+
+</main>
+
+<script>
+  (function () {
+    "use strict";
+
+    /* ------------------------------------------------------------ Tab 切换 */
+    var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+    var panels = {
+      home: document.getElementById("panel-home"),
+      plugins: document.getElementById("panel-plugins"),
+      logs: document.getElementById("panel-logs")
+    };
+
+    function selectTab(id) {
+      tabs.forEach(function (tab) {
+        var active = tab.id === "tab-" + id;
+        tab.setAttribute("aria-selected", String(active));
+      });
+      Object.keys(panels).forEach(function (key) {
+        var panel = panels[key];
+        var active = key === id;
+        panel.classList.toggle("active", active);
+        panel.hidden = !active;
+      });
+      if (id === "logs") {
+        var scroll = document.getElementById("logScroll");
+        scroll.scrollTop = scroll.scrollHeight;
+      }
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        var id = tab.id.replace("tab-", "");
+        selectTab(id);
+        history.replaceState(null, "", "#" + id);
+      });
+    });
+
+    var initial = location.hash.replace("#", "");
+    if (initial === "plugins" || initial === "logs") {
+      selectTab(initial);
+    }
+
+    /* ------------------------------------------------------------ 主页状态演示 */
+    var running = true;
+    var liveDot = document.getElementById("liveDot");
+    var serverState = document.getElementById("serverState");
+    var serverAddress = document.getElementById("serverAddress");
+    var serverPid = document.getElementById("serverPid");
+    var ownershipTag = document.getElementById("ownershipTag");
+    var statusDot = document.getElementById("statusDot");
+    var statusText = document.getElementById("statusText");
+    var btnStart = document.getElementById("btnStart");
+    var btnStop = document.getElementById("btnStop");
+    var btnRestart = document.getElementById("btnRestart");
+    var btnOpen = document.getElementById("btnOpen");
+
+    function renderServer() {
+      liveDot.classList.toggle("stopped", !running);
+      statusDot.classList.toggle("stopped", !running);
+      if (running) {
+        serverState.textContent = "运行中";
+        serverAddress.textContent = "127.0.0.1:3080";
+        serverPid.textContent = "PID 5040";
+        ownershipTag.hidden = false;
+        statusText.textContent = "就绪";
+        btnStart.disabled = true;
+        btnStart.classList.remove("btn-primary");
+        btnStop.disabled = false;
+        btnRestart.disabled = false;
+        btnOpen.disabled = false;
+        btnOpen.classList.add("btn-primary");
+      } else {
+        serverState.textContent = "已停止";
+        serverAddress.textContent = "端口 3080 空闲";
+        serverPid.textContent = "未监听";
+        ownershipTag.hidden = true;
+        statusText.textContent = "dsh web 未运行";
+        btnStart.disabled = false;
+        btnStart.classList.add("btn-primary");
+        btnStop.disabled = true;
+        btnRestart.disabled = true;
+        btnOpen.disabled = true;
+        btnOpen.classList.remove("btn-primary");
+      }
+    }
+
+    btnStop.addEventListener("click", function () { running = false; renderServer(); });
+    btnStart.addEventListener("click", function () { running = true; renderServer(); });
+    renderServer();
+
+    /* ------------------------------------------------------------ 更新通道演示 */
+    var channel = document.getElementById("dshChannel");
+    var npmHint = document.getElementById("npmHint");
+    var btnCheck = document.getElementById("btnCheck");
+    var btnUpdate = document.getElementById("btnUpdate");
+    var installedTag = document.getElementById("installedTag");
+    var latestByChannel = {
+      stable: "0.2.2-rc.1",
+      rc: "0.2.2-rc.1",
+      beta: null,
+      alpha: "0.2.2-alpha.3",
+      next: "0.2.2-rc.1",
+      all: "0.2.3"
+    };
+
+    function updateChannelHint() {
+      var value = channel.value;
+      btnUpdate.hidden = true;
+      if (value === "beta") {
+        npmHint.textContent = "beta 通道无对应 dist-tag，已回退 stable";
+        return;
+      }
+      npmHint.textContent = "尚未检查更新";
+    }
+
+    channel.addEventListener("change", updateChannelHint);
+    updateChannelHint();
+
+    btnCheck.addEventListener("click", function () {
+      var value = channel.value;
+      var latest = latestByChannel[value];
+      if (!latest) {
+        npmHint.textContent = "该通道暂无版本，已回退 stable";
+        return;
+      }
+      if (value === "alpha") {
+        npmHint.textContent = "该通道版本低于当前版本，无可用更新";
+        return;
+      }
+      if (value === "all") {
+        btnUpdate.textContent = "更新到 v" + latest;
+        btnUpdate.hidden = false;
+        npmHint.textContent = "发现新版本 v" + latest;
+        return;
+      }
+      npmHint.textContent = "已是最新版本";
+    });
+
+    btnUpdate.addEventListener("click", function () {
+      btnUpdate.hidden = true;
+      installedTag.textContent = "已安装 v" + latestByChannel[channel.value];
+      npmHint.textContent = "更新完成，重新启动 dsh web 后生效";
+    });
+
+    /* ------------------------------------------------------------ 插件表格 */
+    var body = document.getElementById("pluginBody");
+    var rows = Array.prototype.slice.call(body.querySelectorAll("tr"));
+    var btnEnable = document.getElementById("btnEnable");
+    var btnDisable = document.getElementById("btnDisable");
+    var btnUpdatePlugin = document.getElementById("btnUpdatePlugin");
+    var btnRemove = document.getElementById("btnRemove");
+
+    function selectedRow() {
+      return rows.filter(function (row) { return row.getAttribute("aria-selected") === "true"; })[0] || null;
+    }
+
+    function renderRowActions() {
+      var row = selectedRow();
+      var hasSelection = !!row;
+      var enabled = row && row.getAttribute("data-enabled") === "true";
+      btnEnable.disabled = !hasSelection || enabled;
+      btnDisable.disabled = !hasSelection || !enabled;
+      btnUpdatePlugin.disabled = !hasSelection;
+      btnRemove.disabled = !hasSelection;
+    }
+
+    rows.forEach(function (row) {
+      row.addEventListener("click", function () {
+        rows.forEach(function (other) { other.setAttribute("aria-selected", "false"); });
+        row.setAttribute("aria-selected", "true");
+        renderRowActions();
+
+    /* ------------------------------------------------------------ 一键更新 */
+    var btnUpdateAll = document.getElementById("btnUpdateAll");
+    var updateAllResult = document.getElementById("updateAllResult");
+    var updatableCount = document.getElementById("updatableCount");
+
+    function updatableRows() {
+      return rows.filter(function (row) { return row.querySelector(".ver.new"); });
+    }
+
+    function syncUpdateAllButton() {
+      var count = updatableRows().length;
+      updatableCount.textContent = String(count);
+      updatableCount.classList.toggle("accent", count > 0);
+      btnUpdateAll.disabled = count === 0;
+      btnUpdateAll.textContent = count > 0 ? "一键更新" : "已全部最新";
+    }
+
+    btnUpdateAll.addEventListener("click", function () {
+      var targets = updatableRows();
+      if (targets.length === 0 || btnUpdateAll.disabled) return;
+
+      btnUpdateAll.disabled = true;
+      btnUpdateAll.textContent = "更新中…";
+      updateAllResult.className = "update-result";
+      updateAllResult.textContent = "正在更新 " + targets.length + " 个插件…";
+
+      setTimeout(function () {
+        targets.forEach(function (row) {
+          var current = row.querySelector(".ver.new");
+          var latestCell = current.parentElement;
+          current.textContent = latestCell.textContent.trim();
+          current.classList.remove("new");
+          var cells = row.querySelectorAll(".ver");
+          if (cells.length > 1) cells[cells.length - 1].textContent = "";
+        });
+        updateAllResult.className = "update-result ok";
+        updateAllResult.textContent = "已更新 " + targets.length + " 个插件，重启 dsh web 后生效";
+        syncUpdateAllButton();
+      }, 1200);
+    });
+
+    syncUpdateAllButton();
+      });
+    });
+
+    btnDisable.addEventListener("click", function () {
+      var row = selectedRow();
+      if (!row) return;
+      row.setAttribute("data-enabled", "false");
+      row.querySelector(".tag").className = "tag tag-grey";
+      row.querySelector(".tag").textContent = "已停用";
+      renderRowActions();
+
+    /* ------------------------------------------------------------ 一键更新 */
+    var btnUpdateAll = document.getElementById("btnUpdateAll");
+    var updateAllResult = document.getElementById("updateAllResult");
+    var updatableCount = document.getElementById("updatableCount");
+
+    function updatableRows() {
+      return rows.filter(function (row) { return row.querySelector(".ver.new"); });
+    }
+
+    function syncUpdateAllButton() {
+      var count = updatableRows().length;
+      updatableCount.textContent = String(count);
+      updatableCount.classList.toggle("accent", count > 0);
+      btnUpdateAll.disabled = count === 0;
+      btnUpdateAll.textContent = count > 0 ? "一键更新" : "已全部最新";
+    }
+
+    btnUpdateAll.addEventListener("click", function () {
+      var targets = updatableRows();
+      if (targets.length === 0 || btnUpdateAll.disabled) return;
+
+      btnUpdateAll.disabled = true;
+      btnUpdateAll.textContent = "更新中…";
+      updateAllResult.className = "update-result";
+      updateAllResult.textContent = "正在更新 " + targets.length + " 个插件…";
+
+      setTimeout(function () {
+        targets.forEach(function (row) {
+          var current = row.querySelector(".ver.new");
+          var latestCell = current.parentElement;
+          current.textContent = latestCell.textContent.trim();
+          current.classList.remove("new");
+          var cells = row.querySelectorAll(".ver");
+          if (cells.length > 1) cells[cells.length - 1].textContent = "";
+        });
+        updateAllResult.className = "update-result ok";
+        updateAllResult.textContent = "已更新 " + targets.length + " 个插件，重启 dsh web 后生效";
+        syncUpdateAllButton();
+      }, 1200);
+    });
+
+    syncUpdateAllButton();
+    });
+
+    btnEnable.addEventListener("click", function () {
+      var row = selectedRow();
+      if (!row) return;
+      row.setAttribute("data-enabled", "true");
+      row.querySelector(".tag").className = "tag tag-green";
+      row.querySelector(".tag").textContent = "已启用";
+      renderRowActions();
+
+    /* ------------------------------------------------------------ 一键更新 */
+    var btnUpdateAll = document.getElementById("btnUpdateAll");
+    var updateAllResult = document.getElementById("updateAllResult");
+    var updatableCount = document.getElementById("updatableCount");
+
+    function updatableRows() {
+      return rows.filter(function (row) { return row.querySelector(".ver.new"); });
+    }
+
+    function syncUpdateAllButton() {
+      var count = updatableRows().length;
+      updatableCount.textContent = String(count);
+      updatableCount.classList.toggle("accent", count > 0);
+      btnUpdateAll.disabled = count === 0;
+      btnUpdateAll.textContent = count > 0 ? "一键更新" : "已全部最新";
+    }
+
+    btnUpdateAll.addEventListener("click", function () {
+      var targets = updatableRows();
+      if (targets.length === 0 || btnUpdateAll.disabled) return;
+
+      btnUpdateAll.disabled = true;
+      btnUpdateAll.textContent = "更新中…";
+      updateAllResult.className = "update-result";
+      updateAllResult.textContent = "正在更新 " + targets.length + " 个插件…";
+
+      setTimeout(function () {
+        targets.forEach(function (row) {
+          var current = row.querySelector(".ver.new");
+          var latestCell = current.parentElement;
+          current.textContent = latestCell.textContent.trim();
+          current.classList.remove("new");
+          var cells = row.querySelectorAll(".ver");
+          if (cells.length > 1) cells[cells.length - 1].textContent = "";
+        });
+        updateAllResult.className = "update-result ok";
+        updateAllResult.textContent = "已更新 " + targets.length + " 个插件，重启 dsh web 后生效";
+        syncUpdateAllButton();
+      }, 1200);
+    });
+
+    syncUpdateAllButton();
+    });
+
+    renderRowActions();
+
+    /* ------------------------------------------------------------ 一键更新 */
+    var btnUpdateAll = document.getElementById("btnUpdateAll");
+    var updateAllResult = document.getElementById("updateAllResult");
+    var updatableCount = document.getElementById("updatableCount");
+
+    function updatableRows() {
+      return rows.filter(function (row) { return row.querySelector(".ver.new"); });
+    }
+
+    function syncUpdateAllButton() {
+      var count = updatableRows().length;
+      updatableCount.textContent = String(count);
+      updatableCount.classList.toggle("accent", count > 0);
+      btnUpdateAll.disabled = count === 0;
+      btnUpdateAll.textContent = count > 0 ? "一键更新" : "已全部最新";
+    }
+
+    btnUpdateAll.addEventListener("click", function () {
+      var targets = updatableRows();
+      if (targets.length === 0 || btnUpdateAll.disabled) return;
+
+      btnUpdateAll.disabled = true;
+      btnUpdateAll.textContent = "更新中…";
+      updateAllResult.className = "update-result";
+      updateAllResult.textContent = "正在更新 " + targets.length + " 个插件…";
+
+      setTimeout(function () {
+        targets.forEach(function (row) {
+          var current = row.querySelector(".ver.new");
+          var latestCell = current.parentElement;
+          current.textContent = latestCell.textContent.trim();
+          current.classList.remove("new");
+          var cells = row.querySelectorAll(".ver");
+          if (cells.length > 1) cells[cells.length - 1].textContent = "";
+        });
+        updateAllResult.className = "update-result ok";
+        updateAllResult.textContent = "已更新 " + targets.length + " 个插件，重启 dsh web 后生效";
+        syncUpdateAllButton();
+      }, 1200);
+    });
+
+    syncUpdateAllButton();
+
+    /* ------------------------------------------------------------ 日志滚动到底 */
+    var logScroll = document.getElementById("logScroll");
+    logScroll.scrollTop = logScroll.scrollHeight;
+  })();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

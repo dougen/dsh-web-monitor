@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>DshWebMonitor</AssemblyName>
+    <RootNamespace>DshWebMonitor</RootNamespace>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <ApplicationVisualStyles>true</ApplicationVisualStyles>
+    <ApplicationDefaultFont>Microsoft YaHei UI, 9pt</ApplicationDefaultFont>
+    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <Version>1.0.1</Version>
+    <InformationalVersion>1.0.1</InformationalVersion>
+    <Product>dsh Web Monitor</Product>
+    <Company>dsh Web Monitor</Company>
+    <!-- SDK 用 AssemblyTitle 生成 Win32 版本资源的 FileDescription。 -->
+    <AssemblyTitle>dsh Web Monitor</AssemblyTitle>
+    <Copyright>Copyright © 2026 dsh Web Monitor</Copyright>
+    <Description>dsh web 服务监控器（WinForms）</Description>
+    <!-- app.manifest 的 DPI 声明在进程启动时即生效（早于托管代码），与运行时 ApplicationHighDpiMode 并存是有意为之。 -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="logo.ico" />
+    <EmbeddedResource Include="npm-logo.png" LogicalName="DshWebMonitor.npm-logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="DshWebMonitor.SmokeTests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AntdUI" Version="2.4.19" />
+  </ItemGroup>
+
+</Project>
+
+
+
+
+
+
+
